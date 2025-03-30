@@ -85,3 +85,32 @@ output "s3_bucket_website_endpoint" {
 output "route53_name_servers" {
   value = data.aws_route53_zone.sctp_zone.name_servers
 }
+
+# DynamoDB permissions ---added to try
+resource "aws_iam_policy" "terraform_lock_policy" {
+  name        = "TerraformLockTableAccess"
+  description = "Permissions for Terraform state locking"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:Scan"
+        ]
+        Resource = "arn:aws:dynamodb:*:*:table/terraform-state-locks"
+      }
+    ]
+  })
+}
+
+# Then attach to either an IAM user...
+resource "aws_iam_user_policy_attachment" "rgers3" {
+  user       = "rgers3-github-actions-iam-user"
+  policy_arn = aws_iam_policy.terraform_lock_policy.arn
+}
+
