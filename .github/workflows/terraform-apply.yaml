@@ -25,7 +25,12 @@ jobs:
     - name: Verify AWS credentials
       run: |
         aws sts get-caller-identity
-        
+
+    - name: Verify AWS permissions
+      run: |
+        aws sts get-caller-identity
+        aws dynamodb describe-table --terraform-state-locks     
+    
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
    
