@@ -5,4 +5,4 @@ main.tf ln 90
 DELETE duplicate names IAM policy "TerraformLockTableAccess"
 main.tf ln 119
 check "aws_iam_user_policy"
-verify above info again
+verify above info again!
