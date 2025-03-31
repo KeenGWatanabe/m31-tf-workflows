@@ -86,7 +86,8 @@ output "route53_name_servers" {
   value = data.aws_route53_zone.sctp_zone.name_servers
 }
 
-# DynamoDB permissions ---added to try
+
+# DynamoDB permissions ---added
 resource "aws_iam_policy" "terraform_lock_policy" {
   name        = "TerraformLockTableAccess"
   description = "Permissions for Terraform state locking"
@@ -108,27 +109,47 @@ resource "aws_iam_policy" "terraform_lock_policy" {
   })
 }
 
-# Then attach to the IAM user...
-resource "aws_iam_user_policy_attachment" "rgers3" {
-  user       = "rgers3-github-actions-iam-user"
-  policy_arn = aws_iam_policy.terraform_lock_policy.arn
-  
+# Add OIDC to AWS
+data "aws_caller_identity" "current" {}
+
+resource "aws_iam_openid_connect_provider" "github" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = ["74f3a68f16524f15424927704c9506f55a9316bd"] # GitHub's OIDC thumbprint
 }
 
-# grant permissions to attach policy
-resource "aws_iam_user_policy" "roger_permissions" {
-  user = "roger_ce9"
-  policy = jsonencode({
+locals {
+  project_name = "tf-workflows"
+}
+# variable "local_prefix" {
+#   default = "tf-workflows"
+# }
+# Create IAM role for GitHub Actions
+resource "aws_iam_role" "github_actions" {
+  name = "github-actions-role-${local.project_name}" # unique per project
+  
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "iam:AttachUserPolicy",
-          "iam:DetachUserPolicy"
-        ]
-        Resource = "arn:aws:iam::255945442255:user/rgers3-github-actions-iam-user"
+    Statement = [{
+      Action = "sts:AssumeRoleWithWebIdentity"
+      Principal = {
+        Federated = aws_iam_openid_connect_provider.github.arn # References existing provider
       }
-    ]
+      Condition = {
+        StringEquals = {
+          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+        }
+        StringLike = {
+          "token.actions.githubusercontent.com:sub" = "repo:keengwatanabe/m3.1-tf-workflows:*"
+        }
+      }
+    }]
   })
+}
+
+  
+# 2. Policy attachements (repeatable)
+resource "aws_iam_role_policy_attachment" "dynamodb" {
+  role       = aws_iam_role.github_actions.name  
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess" # aws_iam_policy.terraform_lock_policy.arn
 }
