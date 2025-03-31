@@ -41,4 +41,8 @@ jobs:
       run: terraform plan
    
     - name: Terraform Apply
-      run: terraform apply --auto-approve
+      run: |
+        terraform workspace new $GITHUB_RUN_ID || true
+        terraform workspace select $GITHUB_RUN_ID
+        terraform apply -auto-approve
+    
