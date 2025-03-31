@@ -1,10 +1,13 @@
 provider "aws" {
   region = "us-east-1" # Change to your desired region
 }
+locals {
+  project_name = "tf-workflows"
+}
 
 # Part 1: Create S3 Bucket
 resource "aws_s3_bucket" "static_bucket" {
-  bucket        = "rgers3.sctp-sandbox.com" # Replace with your desired bucket name
+  bucket        = "rgers3.${local.project_name}" # Replace with your desired bucket name
   force_destroy = true # Allows the bucket to be destroyed even if it contains objects
 }
 
@@ -67,7 +70,7 @@ resource "aws_route53_record" "www" {
   }
 }
 
-# backend.
+# backend # check this created before calling
 terraform {
   backend "s3" {
     bucket = "rgers3.tfstate-backend.com"
@@ -118,12 +121,7 @@ resource "aws_iam_openid_connect_provider" "github" {
   thumbprint_list = ["74f3a68f16524f15424927704c9506f55a9316bd"] # GitHub's OIDC thumbprint
 }
 
-locals {
-  project_name = "tf-workflows"
-}
-# variable "local_prefix" {
-#   default = "tf-workflows"
-# }
+
 # Create IAM role for GitHub Actions
 resource "aws_iam_role" "github_actions" {
   name = "github-actions-role-${local.project_name}" # unique per project

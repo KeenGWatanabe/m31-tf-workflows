@@ -1,10 +1,10 @@
 Before spinning, 
 main.tf ln 6
-DELETE duplicate names s3 bucket "rgers3.sctp-sandbox.com"
+# DELETE duplicate names s3 bucket "rgers3.sctp-sandbox.com" `overcome with local.name_prefix`
 main.tf ln 90
-DELETE duplicate names IAM policy "TerraformLockTableAccess"
+# DELETE duplicate names IAM policy "TerraformLockTableAccess"
 main.tf ln 119
-check "aws_iam_user_policy"
+# check "aws_iam_user_policy" NOT USING, REPLACE WITH OIDC
 verify above info again!
 
 Yes, switching to **OIDC (OpenID Connect) for GitHub Actions** would completely overcome this permission error because:
@@ -110,4 +110,4 @@ jobs:
 2. Update your GitHub Actions workflow as shown above.
 3. Remove static credentials from GitHub Secrets.
 
-**Note:** The initial Terraform apply for OIDC setup must be run by an admin or a user with elevated permissions. After setup, all subsequent runs use the OIDC role's permissions.
+**Note:** The initial Terraform apply for `OIDC setup must be run by an admin or a user with elevated permissions`. After setup, `all subsequent runs use the OIDC role's permissions`.
