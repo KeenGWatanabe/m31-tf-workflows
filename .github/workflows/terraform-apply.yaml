@@ -28,9 +28,7 @@ jobs:
 
     - name: Verify AWS permissions
       run: |
-        # Verify AWS credentials
         aws sts get-caller-identity
-        # Describe dynamodDB lock table
         aws dynamodb describe-table --table-name terraform-state-locks     
     
     - name: Setup Terraform
