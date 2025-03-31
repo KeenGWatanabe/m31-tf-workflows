@@ -19,17 +19,17 @@ resource "aws_s3_bucket_public_access_block" "enable_public_access" {
 }
 
 # Part 2: Enable Static Website Hosting
-resource "aws_s3_bucket_website_configuration" "website" {
-  bucket = aws_s3_bucket.static_bucket.bucket
+# resource "aws_s3_bucket_website_configuration" "website" {
+#   bucket = aws_s3_bucket.static_bucket.bucket
 
-  index_document {
-    suffix = "index.html"
-  }
+#   index_document {
+#     suffix = "index.html"
+#   }
 
-  error_document {
-    key = "error.html"
-  }
-}
+#   error_document {
+#     key = "error.html"
+#   }
+# }
 
 
 # Part 3: Bucket Policy to Allow Public Access
