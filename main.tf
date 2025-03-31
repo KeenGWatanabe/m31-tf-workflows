@@ -108,9 +108,27 @@ resource "aws_iam_policy" "terraform_lock_policy" {
   })
 }
 
-# Then attach to either an IAM user...
+# Then attach to the IAM user...
 resource "aws_iam_user_policy_attachment" "rgers3" {
   user       = "rgers3-github-actions-iam-user"
   policy_arn = aws_iam_policy.terraform_lock_policy.arn
+  
 }
 
+# grant permissions to attach policy
+resource "aws_iam_user_policy" "roger_permissions" {
+  user = "roger_ce9"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:AttachUserPolicy",
+          "iam:DetachUserPolicy"
+        ]
+        Resource = "arn:aws:iam::255945442255:user/rgers3-github-actions-iam-user"
+      }
+    ]
+  })
+}
