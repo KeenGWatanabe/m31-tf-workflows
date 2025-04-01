@@ -112,14 +112,14 @@ resource "aws_iam_policy" "terraform_lock_policy" {
   })
 }
 
-# Add OIDC to AWS
-data "aws_caller_identity" "current" {}
+# # oidc-provider.tf (run once per AWS account-run separate first)
+# data "aws_caller_identity" "current" {}
 
-resource "aws_iam_openid_connect_provider" "github" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = ["74f3a68f16524f15424927704c9506f55a9316bd"] # GitHub's OIDC thumbprint
-}
+# resource "aws_iam_openid_connect_provider" "github" {
+#   url             = "https://token.actions.githubusercontent.com"
+#   client_id_list  = ["sts.amazonaws.com"]
+#   thumbprint_list = ["74f3a68f16524f15424927704c9506f55a9316bd"] # GitHub's OIDC thumbprint
+# }
 
 
 # Create IAM role for GitHub Actions

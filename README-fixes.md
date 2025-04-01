@@ -3,9 +3,8 @@ main.tf ln 6
 # DELETE duplicate names s3 bucket "rgers3.sctp-sandbox.com" `overcome with local.name_prefix`
 main.tf ln 90
 # DELETE duplicate names IAM policy "TerraformLockTableAccess"
-main.tf ln 119
+
 # check "aws_iam_user_policy" NOT USING, REPLACE WITH OIDC
-verify above info again!
 
 Yes, switching to **OIDC (OpenID Connect) for GitHub Actions** would completely overcome this permission error because:
 
