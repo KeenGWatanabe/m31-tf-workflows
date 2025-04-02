@@ -121,6 +121,10 @@ resource "aws_iam_policy" "terraform_lock_policy" {
 #   thumbprint_list = ["74f3a68f16524f15424927704c9506f55a9316bd"] # GitHub's OIDC thumbprint
 # }
 
+# Reference existing OIDC provider
+data "aws_iam_openid_connect_provider" "github" {
+  url = "https://token.actions.githubusercontent.com"
+}
 
 # Create IAM role for GitHub Actions
 resource "aws_iam_role" "github_actions" {
@@ -131,7 +135,7 @@ resource "aws_iam_role" "github_actions" {
     Statement = [{
       Action = "sts:AssumeRoleWithWebIdentity"
       Principal = {
-        Federated = aws_iam_openid_connect_provider.github.arn # References existing provider
+        Federated = data.aws_iam_openid_connect_provider.github.arn # References existing provider
       }
       Condition = {
         StringEquals = {
