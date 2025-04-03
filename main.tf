@@ -64,14 +64,11 @@ terraform {
   }
 }
 
-# Output the S3 Bucket Website Endpoint
-output "s3_bucket_website_endpoint" {
-  value = aws_s3_bucket_website_configuration.website.website_endpoint
-}
+
 
 # DynamoDB permissions ---added
 resource "aws_iam_policy" "terraform_lock_policy" {
-  name        = "TerraformLockTableAccess"
+  name        = "TerraformLockTableAccess${local.project_name}"
   description = "Permissions for Terraform state locking"
 
   policy = jsonencode({
@@ -93,10 +90,6 @@ resource "aws_iam_policy" "terraform_lock_policy" {
 
 # # oidc.tf (run once per AWS account-run separate first)
 
-# Reference existing OIDC provider
-data "aws_iam_openid_connect_provider" "github" {
-  url = "https://token.actions.githubusercontent.com"
-}
 
 # Create IAM role for GitHub Actions
 resource "aws_iam_role" "github_actions" {
@@ -105,10 +98,11 @@ resource "aws_iam_role" "github_actions" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Action = "sts:AssumeRoleWithWebIdentity"
+      "Effect": "Allow" 
       Principal = {
-        Federated = data.aws_iam_openid_connect_provider.github.arn # References existing provider
+        Federated = "arn:aws:iam::255945442255:oidc-provider/token.actions.githubusercontent.com" #data.aws_iam_openid_connect_provider.github.arn # References existing provider
       }
+      Action = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
@@ -126,4 +120,17 @@ resource "aws_iam_role" "github_actions" {
 resource "aws_iam_role_policy_attachment" "dynamodb" {
   role       = aws_iam_role.github_actions.name  
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess" # aws_iam_policy.terraform_lock_policy.arn
+}
+
+# Output the S3 Bucket Website Endpoint
+output "s3_bucket_website_endpoint" {
+  value = aws_s3_bucket_website_configuration.website.website_endpoint
+}
+
+output "aws_iam_policy" {
+  value = aws_iam_policy.terraform_lock_policy
+}
+
+output "aws_iam_role" {
+  value = aws_iam_role.github_actions
 }
