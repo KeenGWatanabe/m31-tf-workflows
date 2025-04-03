@@ -10,7 +10,7 @@ env:
 jobs:
   CICD:
     runs-on: ubuntu-latest
- 
+  deploy: 
     permissions:
       id-token: write
       contents: read
@@ -33,7 +33,7 @@ jobs:
       env:
         ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ACTIONS_ID_TOKEN_REQUEST_URL: ${{ env.ACTIONS_ID_TOKEN_REQUEST_URL }}
-            
+
     - name: Verify AWS credentials
       run: |
         aws sts get-caller-identity
