@@ -10,10 +10,13 @@ env:
 jobs:
   CICD:
     runs-on: ubuntu-latest
-
+ 
+    permissions:
+      id-token: write
+      contents: read
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
    
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v3
@@ -21,7 +24,7 @@ jobs:
         role-to-assume: arn:aws:iam::255945442255:role/github-actions-role
         aws-region: us-east-1
         role-session-name: github-actions
-        # role-duration-seconds: 3600 # optional to set session duration
+        audience : sts.amazonaws.com
         
     - name: Verify AWS credentials
       run: |
