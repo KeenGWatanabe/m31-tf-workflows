@@ -88,35 +88,7 @@ resource "aws_iam_policy" "terraform_lock_policy" {
   })
 }
 
-# # oidc.tf (run once per AWS account-run separate first)
-resource "aws_iam_openid_connect_provider" "github" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"] # GitHub's thumbprint
-}
-# Create IAM role for GitHub Actions
-resource "aws_iam_role" "github_actions" {
-  name = "github-actions-role-${local.project_name}" # unique per project
-  
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect: "Allow" 
-      Principal = {
-        Federated = "arn:aws:iam::255945442255:oidc-provider/token.actions.githubusercontent.com" #data.aws_iam_openid_connect_provider.github.arn # References existing provider
-      }
-      Action = "sts:AssumeRoleWithWebIdentity"
-      Condition = {
-        StringEquals = {
-          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
-        }
-        StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:keengwatanabe/m3.1-tf-workflows:*"
-        }
-      }
-    }]
-  })
-}
+
 # Set role permissions
 resource "aws_iam_role_policy_attachment" "github_actions" {
   role       = aws_iam_role.github_actions.name
@@ -135,6 +107,9 @@ output "s3_bucket_website_endpoint" {
   value = aws_s3_bucket_website_configuration.website.website_endpoint
 }
 
+output "github_role_arn" {
+  value = aws_iam_role.github_actions.arn 
+}
 output "aws_iam_policy" {
   value = aws_iam_policy.terraform_lock_policy.id
 }
