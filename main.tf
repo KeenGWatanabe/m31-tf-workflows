@@ -128,9 +128,9 @@ output "s3_bucket_website_endpoint" {
 }
 
 output "aws_iam_policy" {
-  value = aws_iam_policy.terraform_lock_policy
+  value = aws_iam_policy.terraform_lock_policy.id
 }
 
 output "aws_iam_role" {
-  value = aws_iam_role.github_actions
+  value = aws_iam_role.github_actions.id
 }
