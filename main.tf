@@ -15,10 +15,10 @@ resource "aws_s3_bucket" "static_bucket" {
 resource "aws_s3_bucket_public_access_block" "enable_public_access" {
   bucket = aws_s3_bucket.static_bucket.bucket
 
-  block_public_acls       = false
+  block_public_acls       = true
   ignore_public_acls      = false
-  block_public_policy     = false
-  restrict_public_buckets = false
+  block_public_policy     = true
+  restrict_public_buckets = true
 }
 
 # Part 2: Enable Static Website Hosting
