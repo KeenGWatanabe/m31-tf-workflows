@@ -20,8 +20,8 @@ jobs:
       with:
         role-to-assume: arn:aws:iam::255945442255:role/github-actions-role
         aws-region: us-east-1
-        role-session-name: github_actions
-        role-duration-seconds: 3600 # optional to set session duration
+        role-session-name: github-actions
+        # role-duration-seconds: 3600 # optional to set session duration
         
     - name: Verify AWS credentials
       run: |
