@@ -23,9 +23,17 @@ jobs:
       with:
         role-to-assume: arn:aws:iam::255945442255:role/github-actions-role
         aws-region: us-east-1
-        role-session-name: github-actions
+        role-session-name: github-actions-${{github.run_id}} # unique session name
         audience : sts.amazonaws.com
-        
+
+    - name: Debug OIDC token
+      run: |
+        curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+        "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq
+      env:
+        ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ACTIONS_ID_TOKEN_REQUEST_URL: ${{ env.ACTIONS_ID_TOKEN_REQUEST_URL }}
+            
     - name: Verify AWS credentials
       run: |
         aws sts get-caller-identity
