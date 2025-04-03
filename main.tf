@@ -53,22 +53,6 @@ resource "aws_s3_bucket_policy" "allow_public_access" {
   })
 }
 
-# Part 4: Set Up Route 53 Record to Point to Your Bucket
-data "aws_route53_zone" "sctp_zone" {
-  name = "sctp-sandbox.com" # Replace with your domain name
-}
-
-resource "aws_route53_record" "www" {
-  zone_id = data.aws_route53_zone.sctp_zone.zone_id
-  name    = "rgers3" # Bucket prefix before sctp-sandbox.com
-  type    = "A"
-
-  alias {
-    name                   = aws_s3_bucket_website_configuration.website.website_domain
-    zone_id                = aws_s3_bucket.static_bucket.hosted_zone_id
-    evaluate_target_health = true
-  }
-}
 
 # backend # check this created before calling
 terraform {
@@ -84,11 +68,6 @@ terraform {
 output "s3_bucket_website_endpoint" {
   value = aws_s3_bucket_website_configuration.website.website_endpoint
 }
-#output route53 name servers
-output "route53_name_servers" {
-  value = data.aws_route53_zone.sctp_zone.name_servers
-}
-
 
 # DynamoDB permissions ---added
 resource "aws_iam_policy" "terraform_lock_policy" {
@@ -112,14 +91,7 @@ resource "aws_iam_policy" "terraform_lock_policy" {
   })
 }
 
-# # oidc-provider.tf (run once per AWS account-run separate first)
-# data "aws_caller_identity" "current" {}
-
-# resource "aws_iam_openid_connect_provider" "github" {
-#   url             = "https://token.actions.githubusercontent.com"
-#   client_id_list  = ["sts.amazonaws.com"]
-#   thumbprint_list = ["74f3a68f16524f15424927704c9506f55a9316bd"] # GitHub's OIDC thumbprint
-# }
+# # oidc.tf (run once per AWS account-run separate first)
 
 # Reference existing OIDC provider
 data "aws_iam_openid_connect_provider" "github" {
