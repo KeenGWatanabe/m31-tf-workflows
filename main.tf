@@ -89,31 +89,27 @@ resource "aws_iam_policy" "terraform_lock_policy" {
 }
 
 
-# Set role permissions
-resource "aws_iam_role_policy_attachment" "github_actions" {
-  role       = aws_iam_role.github_actions.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # Start broad, then restrict
-}
+# # Set role permissions
+# resource "aws_iam_role_policy_attachment" "github_actions" {
+#   role       = aws_iam_role.github_actions.name
+#   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # Start broad, then restrict
+# }
 
   
-# 2. Policy attachements (repeatable)
-resource "aws_iam_role_policy_attachment" "dynamodb" {
-  role       = aws_iam_role.github_actions.name  
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess" # aws_iam_policy.terraform_lock_policy.arn
-}
+# # 2. Policy attachements (repeatable)
+# resource "aws_iam_role_policy_attachment" "dynamodb" {
+#   role       = aws_iam_role.github_actions.name  
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess" # aws_iam_policy.terraform_lock_policy.arn
+# }
 
 # Outputs to look for creations in aws
 output "s3_bucket_website_endpoint" {
   value = aws_s3_bucket_website_configuration.website.website_endpoint
 }
 
-output "github_role_arn" {
-  value = aws_iam_role.github_actions.arn 
-}
+# output "github_role_arn" {
+#   value = aws_iam_role.github_actions.arn 
+# }
 output "aws_iam_policy" {
   value = aws_iam_policy.terraform_lock_policy.id
-}
-
-output "aws_iam_role" {
-  value = aws_iam_role.github_actions.id
 }
