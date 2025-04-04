@@ -2,56 +2,44 @@ name: Terraform Deployment
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
 
-env:            
-  AWS_REGION: us-east-1  
+env:
+  AWS_REGION: us-east-1
+  TF_WORKSPACE: ${{ github.run_id }}
 
 jobs:
-  deploy:  # Changed from CICD to deploy (single job)
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
+    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
    
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v3
+    - uses: aws-actions/configure-aws-credentials@v3
       with:
         role-to-assume: arn:aws:iam::255945442255:role/github-actions-role
-        aws-region: us-east-1
-        role-session-name: github-actions-${{ github.run_id }}
+        aws-region: ${{ env.AWS_REGION }}
+        role-session-name: github-actions-${{ env.TF_WORKSPACE }}
         audience: sts.amazonaws.com
 
-    - name: Debug OIDC token
-      run: |
-        curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-        "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq
-      env:
-        ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        ACTIONS_ID_TOKEN_REQUEST_URL: ${{ env.ACTIONS_ID_TOKEN_REQUEST_URL }}
-
-    - name: Verify AWS credentials
-      run: aws sts get-caller-identity
-
-    - name: Verify AWS permissions
+    - name: Verify AWS access
       run: |
         aws sts get-caller-identity
-        aws dynamodb describe-table --table-name terraform-state-locks     
+        aws dynamodb describe-table --table-name terraform-state-locks
+        aws s3 ls || echo "S3 access check"
     
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-   
-    - name: Terraform Init
-      run: terraform init
+    - uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0  # Pin your version
 
-    - name: Terraform Plan
-      run: terraform plan
-   
-    - name: Terraform Apply
-      run: |
-        terraform workspace new $GITHUB_RUN_ID || true
-        terraform workspace select $GITHUB_RUN_ID
+    - run: terraform init
+
+    - run: terraform plan
+
+    - run: |
+        terraform workspace new $TF_WORKSPACE || true
+        terraform workspace select $TF_WORKSPACE
         terraform apply -auto-approve
