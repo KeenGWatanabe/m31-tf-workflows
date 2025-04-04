@@ -149,6 +149,3 @@ output "role_arn" {
 output "aws_iam_role" {
   value = aws_iam_role.github_actions.id
 }
-output "role_arn" {
-  value = aws_iam_role.github_actions.arn
-}
