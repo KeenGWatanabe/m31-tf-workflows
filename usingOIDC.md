@@ -1,6 +1,6 @@
 Before spinning, 
 main.tf ln 6
-# DELETE duplicate names s3 bucket "rgers3.sctp-sandbox.com" `overcome with local.name_prefix`
+# DELETE duplicate names s3 bucket "rgers3.tf-workflows" `overcome with local.name_prefix`
 main.tf ln 90
 # DELETE duplicate names IAM policy "TerraformLockTableAccess"
 
