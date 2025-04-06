@@ -26,6 +26,8 @@ Yes, switching to **OIDC (OpenID Connect) for GitHub Actions** would completely 
 ---
 
 ### How to Implement OIDC
+step-by-step repo here
+https://github.com/KeenGWatanabe/oidc
 
 #### 1. Add OIDC Provider to AWS (if not exists)
 ```hcl
@@ -38,7 +40,7 @@ resource "aws_iam_openid_connect_provider" "github" {
 }
 ```
 
-#### 2. Create IAM Role for GitHub Actions
+#### 2. Create IAM Role (trust policy) for GitHub Actions
 ```hcl
 resource "aws_iam_role" "github_actions" {
   name = "github-actions-role"

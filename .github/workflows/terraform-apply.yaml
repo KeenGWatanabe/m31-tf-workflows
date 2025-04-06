@@ -33,7 +33,7 @@ jobs:
     
     - uses: hashicorp/setup-terraform@v2
       with:
-        terraform_version: 1.5.0  # Pin your version
+        terraform_version: 1.11.2  # Pin your version
 
     - run: terraform init
 

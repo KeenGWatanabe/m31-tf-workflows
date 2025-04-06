@@ -12,14 +12,14 @@ resource "aws_s3_bucket" "static_bucket" {
   force_destroy = true # Allows the bucket to be destroyed even if it contains objects
 }
 
-# Enable Public Access for the Bucket
-resource "aws_s3_bucket_public_access_block" "enable_public_access" {
+# Controls Restrictions for the Bucket
+resource "aws_s3_bucket_public_access_block" "controls_restrictions" {
   bucket = aws_s3_bucket.static_bucket.bucket
 
-  block_public_acls       = false
-  ignore_public_acls      = false
-  block_public_policy     = false
-  restrict_public_buckets = false
+  block_public_acls       = false #Allow public ACLs
+  ignore_public_acls      = false #Respect public ACLs
+  block_public_policy     = false #Allow public bucket policies
+  restrict_public_buckets = false #Don't restrict public buckets
 }
 
 # Part 2: Enable Static Website Hosting
