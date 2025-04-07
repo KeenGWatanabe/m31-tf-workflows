@@ -97,33 +97,6 @@ resource "aws_iam_openid_connect_provider" "github" {
   thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]  # GitHub's OIDC thumbprint2024
 }
 
-<<<<<<< HEAD
-
-=======
-# Create IAM role for GitHub Actions (trust policy) 
-resource "aws_iam_role" "github_actions" {
-  name = "github-actions-role-${local.project_name}" # unique per project
-  
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect: "Allow" 
-      Principal = {
-        Federated = aws_iam_openid_connect_provider.github.arn # References existing provider
-      }
-      Action = "sts:AssumeRoleWithWebIdentity"
-      Condition = {
-        StringEquals = {
-          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
-        }
-        StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:${local.github_repository}:*"
-        }
-      }
-    }]
-  })
-}
->>>>>>> 02a628cf099befe22f45903c11acb48e888795f0
 
 
 
