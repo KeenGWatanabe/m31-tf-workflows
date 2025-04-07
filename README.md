@@ -1,13 +1,14 @@
 Activity 2: Creating a Basic Terraform Workflow
 
-# Step 1: Create Github repository secrets
-Go to your Github repository -> Settings
+# Step 1: Create Github repository secrets 
+For this activity, i use OIDC https://github.com/keengwatanabe/oidc
+<!-- Go to your Github repository -> Settings
 Go to Security > Secrets and Variables -> Actions
 Click “New Repository Secret”
 You will have to create 2 secrets with the following name:Name: AWS_ACCESS_KEY_ID
 Value: Key in your Access Key ID value
 Name: AWS_SECRET_ACCESS_KEY
-Value: Key in your Secret Access Key ID value
+Value: Key in your Secret Access Key ID value -->
 
 # Step 2: Create your Terraform files
 You may add any terraform resources as you like (Even a S3 bucket). However remember to `use a backend block to save your tfstate into a s3 bucket`.
@@ -35,7 +36,7 @@ on:
     branches: [ "main" ]
 
 env:            
-  AWS_REGION: ap-southeast-1  
+  AWS_REGION: us-east-1  
 
 jobs:
   CICD:
