@@ -93,41 +93,9 @@ resource "aws_iam_policy" "terraform_lock_policy" {
 # # Set role permissions
 
 
-# Create IAM role for GitHub Actions
-resource "aws_iam_role" "github_actions" {
-  name = "github-actions-role" # unique per project
-  
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect: "Allow" 
-      Principal = {
-        Federated = "arn:aws:iam::255945442255:oidc-provider/token.actions.githubusercontent.com" #data.aws_iam_openid_connect_provider.github.arn # References existing provider
-      }
-      Action = "sts:AssumeRoleWithWebIdentity"
-      Condition = {
-        StringEquals = {
-          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
-        }
-        StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:keengwatanabe/m3.1-tf-workflows:*"
-        }
-      }
-    }]
-  })
-}
 
-resource "aws_iam_role_policy_attachment" "github_actions" {
-  role       = aws_iam_role.github_actions.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # Start broad, then restrict
-}
 
-  
-# # 2. Policy attachements (repeatable)
-resource "aws_iam_role_policy_attachment" "dynamodb" {
-  role       = aws_iam_role.github_actions.name  
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess" # aws_iam_policy.terraform_lock_policy.arn
-}
+
 
 # Outputs to look for creations in aws
 output "s3_bucket_website_endpoint" {
