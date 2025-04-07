@@ -3,8 +3,8 @@ provider "aws" {
 }
 locals {
   project_name = "tf-workflows"
-  github_actions_role_arn = "arn:aws:iam::255945442255:role/github-actions-role"
-}
+  github_repository = "KeenGWatanabe/m3.1-tf-workflows"
+  }
 
 # Part 1: Create S3 Bucket
 resource "aws_s3_bucket" "static_bucket" {
@@ -90,16 +90,16 @@ resource "aws_iam_policy" "terraform_lock_policy" {
 }
 
 
-# OIDC provider
+# OIDC provider 
 resource "aws_iam_openid_connect_provider" "github" {
   url = "https://token.actions.githubusercontent.com"
   client_id_list = ["sts.amazonaws.com"]  # This is the audience we'll use
   thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]  # GitHub's OIDC thumbprint2024
 }
 
-# Create IAM role for GitHub Actions
+# Create IAM role for GitHub Actions (trust policy) 
 resource "aws_iam_role" "github_actions" {
-  name = "github-actions-role" # unique per project
+  name = "github-actions-role-${local.project_name}" # unique per project
   
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -114,7 +114,7 @@ resource "aws_iam_role" "github_actions" {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         }
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:keengwatanabe/m3.1-tf-workflows:*"
+          "token.actions.githubusercontent.com:sub" = "repo:${local.github_repository}:*"
         }
       }
     }]
@@ -146,7 +146,7 @@ output "aws_iam_policy" {
 }
 # Use the local value elsewhere (e.g., outputs)
 output "role_arn" {
-  value = local.github_actions_role_arn
+  value = aws_iam_openid_connect_provider.github.arn
 }
 
 
