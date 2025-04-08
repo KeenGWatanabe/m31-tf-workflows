@@ -82,8 +82,8 @@ GitHub repository name matches exactly (`case-sensitive`)
 Workflow has `permissions: id-token: write`
 
 # check CloudTrail events
-![GetSAMLProvider](./docs/GetSAMLProvider.json)
-![OIDC no mfa?](./docs/GetOpenIDConnectProvider.json)
+[GetSAMLProvider](./docs/GetSAMLProvider.json)
+[OIDC no mfa?](./docs/GetOpenIDConnectProvider.json)
 
 # GitHub workflow error 
 Run aws-actions/configure-aws-credentials@v4
@@ -99,7 +99,7 @@ Assuming role with OIDC
 Error: Could not assume role with OIDC: Not authorized to perform sts:AssumeRoleWithWebIdentity
 
 # check trust in IAM
-![policy checks cli](./docs/ReturningTrustPolicyChecks.md)
+[policy checks cli](./docs/ReturningTrustPolicyChecks.md)
 
 #### 4. Update GitHub Actions Workflow
 ```yaml
