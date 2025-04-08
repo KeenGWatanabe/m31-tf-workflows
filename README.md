@@ -74,3 +74,16 @@ jobs:
     - name: Terraform Apply
       run: terraform apply --auto-approve
 
+# fixes
+Run the cli to update trust-policy in the same directory
+```
+ aws iam update-assume-role-policy \
+  --role-name github-actions-role-tf-workflows \
+  --policy-document file://trust.json
+```
+# verify
+```
+aws iam simulate-principal-policy \
+  --policy-source-arn arn:aws:iam::255945442255:role/github-actions-role-tf-workflows \
+  --action-names "sts:AssumeRoleWithWebIdentity"
+```
