@@ -96,7 +96,7 @@ Run aws-actions/configure-aws-credentials@v4
     TF_WORKSPACE: 14345208543
 Assuming role with OIDC
 Error: Could not assume role with OIDC: Not authorized to perform sts:AssumeRoleWithWebIdentity
-![policy checks cli](./docs/ReturningTrustPolicyChecks.json)
+![policy checks cli](./docs/ReturningTrustPolicyChecks.md)
 
 #### 4. Update GitHub Actions Workflow
 ```yaml
