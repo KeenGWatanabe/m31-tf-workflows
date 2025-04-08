@@ -84,6 +84,20 @@ Workflow has `permissions: id-token: write`
 # check CloudTrail events
 ![GetSAMLProvider](./docs/GetSAMLProvider.json)
 ![OIDC no mfa?](./docs/GetOpenIDConnectProvider.json)
+# workflow error 
+Run aws-actions/configure-aws-credentials@v4
+  with:
+    role-to-assume: arn:aws:iam::255945442255:role/github-actions-role
+    aws-region: us-east-1
+    role-session-name: github-actions-14345208543
+    audience: sts.amazonaws.com
+  env:
+    AWS_REGION: us-east-1
+    TF_WORKSPACE: 14345208543
+Assuming role with OIDC
+Error: Could not assume role with OIDC: Not authorized to perform sts:AssumeRoleWithWebIdentity
+![policy checks cli](./docs/ReturningTrustPolicyChecks.json)
+
 #### 4. Update GitHub Actions Workflow
 ```yaml
 jobs:
