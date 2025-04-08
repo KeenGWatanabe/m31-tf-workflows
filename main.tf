@@ -88,25 +88,37 @@ resource "aws_iam_policy" "terraform_lock_policy" {
     ]
   })
 }
+# Attach WHAT the role can do (permission policies)
+resource "aws_iam_role_policy_attachment" "dynamodb" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+}
 
-
-# OIDC provider 
+# resource "aws_iam_role_policy_attachment" "admin" {
+#   role       = aws_iam_role.github_actions.name
+#   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # Least privilege recommended!
+# }
+resource "aws_iam_role_policy_attachment" "s3" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess" # Example
+}
+# OIDC Provider (correct thumbprint as of June 2024)
 resource "aws_iam_openid_connect_provider" "github" {
-  url = "https://token.actions.githubusercontent.com"
-  client_id_list = ["sts.amazonaws.com"]  # This is the audience we'll use
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]  # GitHub's OIDC thumbprint2024
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
 }
 
 # IAM Role with Fixed Syntax
 resource "aws_iam_role" "github_actions" {
-  name = "github-actions-role-${local.project_name}"  # Added project suffix for uniqueness
+  name = "github-actions-role-${local.project_name}"  
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect: "Allow",
+      Effect = "Allow",  # Fixed comma
       Principal = {
-        Federated = aws_iam_openid_connect_provider.github.arn # References existing provider
+        Federated = aws_iam_openid_connect_provider.github.arn  # Correct reference
       },
       Action = "sts:AssumeRoleWithWebIdentity",
       Condition = {
@@ -120,9 +132,6 @@ resource "aws_iam_role" "github_actions" {
     }]
   })
 }
-
-
-
 
 # Outputs to look for creations in aws
 output "s3_bucket_website_endpoint" {

@@ -1,7 +1,11 @@
 Activity 2: Creating a Basic Terraform Workflow
+# Step 0: run tf-backend repo
+https://github.com/KeenGWatanabe/tf-backend
 
 # Step 1: Create Github repository secrets 
-For this activity, i use OIDC https://github.com/keengwatanabe/oidc
+For this activity, i use OIDC instead of AWS secrets
+ref: https://github.com/KeenGWatanabe/oidc
+ 
 <!-- Go to your Github repository -> Settings
 Go to Security > Secrets and Variables -> Actions
 Click “New Repository Secret”
