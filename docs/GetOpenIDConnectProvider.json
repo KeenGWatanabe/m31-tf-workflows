@@ -1,0 +1,40 @@
+{
+  "eventVersion": "1.10",
+  "userIdentity": {
+      "type": "IAMUser",
+      "principalId": "AIDATXF4JQPHSJBRD6BKV",
+      "arn": "arn:aws:iam::255945442255:user/roger_ce9",
+      "accountId": "255945442255",
+      "accessKeyId": "ASIATXF4JQPHXTBV5UIE",
+      "userName": "roger_ce9",
+      "sessionContext": {
+          "attributes": {
+              "creationDate": "2025-04-08T22:25:28Z",
+              "mfaAuthenticated": "false"
+          }
+      }
+  },
+  "eventTime": "2025-04-08T22:48:08Z",
+  "eventSource": "iam.amazonaws.com",
+  "eventName": "GetOpenIDConnectProvider",
+  "awsRegion": "us-east-1",
+  "sourceIPAddress": "119.74.93.41",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+  "requestParameters": {
+      "openIDConnectProviderArn": "arn:aws:iam::255945442255:oidc-provider/token.actions.githubusercontent.com"
+  },
+  "responseElements": null,
+  "requestID": "ea33dcc0-4f1f-4762-8ce6-638259804b16",
+  "eventID": "923a3919-ee14-42e0-abd6-da3575ec637d",
+  "readOnly": true,
+  "eventType": "AwsApiCall",
+  "managementEvent": true,
+  "recipientAccountId": "255945442255",
+  "eventCategory": "Management",
+  "tlsDetails": {
+      "tlsVersion": "TLSv1.3",
+      "cipherSuite": "TLS_AES_128_GCM_SHA256",
+      "clientProvidedHostHeader": "iam.amazonaws.com"
+  },
+  "sessionCredentialFromConsole": "true"
+}

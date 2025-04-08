@@ -73,7 +73,17 @@ resource "aws_iam_role_policy_attachment" "terraform_lock_access" {
   policy_arn = aws_iam_policy.terraform_lock_policy.arn
 }
 ```
+# checking provier exists cli:
+![checking provider expected output](./docs/image.png)
 
+Your workflow should now work if:
+The IAM role's trust policy uses the `exact OIDC provider ARN`
+GitHub repository name matches exactly (`case-sensitive`)
+Workflow has `permissions: id-token: write`
+
+# check CloudTrail events
+![GetSAMLProvider](./docs/GetSAMLProvider.json)
+![OIDC no mfa?](./docs/GetOpenIDConnectProvider.json)
 #### 4. Update GitHub Actions Workflow
 ```yaml
 jobs:

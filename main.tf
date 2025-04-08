@@ -3,7 +3,7 @@ provider "aws" {
 }
 locals {
   project_name = "tf-workflows"
-  github_repository = "KeenGWatanabe/m3.1-tf-workflows"
+  github_repository = "KeenGWatanabe/m3.1-tf-workflows" #github repo case-sensitive
   }
 
 # Part 1: Create S3 Bucket
@@ -88,26 +88,15 @@ resource "aws_iam_policy" "terraform_lock_policy" {
     ]
   })
 }
-# Attach WHAT the role can do (permission policies)
-resource "aws_iam_role_policy_attachment" "dynamodb" {
-  role       = aws_iam_role.github_actions.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-}
 
-# resource "aws_iam_role_policy_attachment" "admin" {
-#   role       = aws_iam_role.github_actions.name
-#   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # Least privilege recommended!
+data "aws_caller_identity" "current" {}
+
+# # OIDC Provider (correct thumbprint as of June 2024)
+# resource "aws_iam_openid_connect_provider" "github" {
+#   url             = "https://token.actions.githubusercontent.com"
+#   client_id_list  = ["sts.amazonaws.com"]
+#   thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
 # }
-resource "aws_iam_role_policy_attachment" "s3" {
-  role       = aws_iam_role.github_actions.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess" # Example
-}
-# OIDC Provider (correct thumbprint as of June 2024)
-resource "aws_iam_openid_connect_provider" "github" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
-}
 
 # IAM Role with Fixed Syntax
 resource "aws_iam_role" "github_actions" {
@@ -118,7 +107,7 @@ resource "aws_iam_role" "github_actions" {
     Statement = [{
       Effect = "Allow",  # Fixed comma
       Principal = {
-        Federated = "arn:aws:iam::255945442255:oidc-provider/token.actions.githubusercontent.com"   # Correct reference
+        Federated = "arn:aws:iam::255945442255:oidc-provider/token.actions.githubusercontent.com"   # exact OIDC provider ARN
       },
       Action = "sts:AssumeRoleWithWebIdentity",
       Condition = {
@@ -133,6 +122,21 @@ resource "aws_iam_role" "github_actions" {
   })
 }
 
+# Attach WHAT the role can do (permission policies)
+resource "aws_iam_role_policy_attachment" "dynamodb" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+}
+
+# resource "aws_iam_role_policy_attachment" "admin" {
+#   role       = aws_iam_role.github_actions.name
+#   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # Least privilege recommended!
+# }
+resource "aws_iam_role_policy_attachment" "s3" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess" # Example
+}
+
 # Outputs to look for creations in aws
 output "s3_bucket_website_endpoint" {
   value = aws_s3_bucket_website_configuration.website.website_endpoint
@@ -144,10 +148,10 @@ output "github_role_arn" {
 output "aws_iam_policy" {
   value = aws_iam_policy.terraform_lock_policy.id
 }
-# Use the local value elsewhere (e.g., outputs)
-output "role_arn" {
-  value = aws_iam_openid_connect_provider.github.arn
-}
+# # Use the local value elsewhere (e.g., outputs)
+# output "role_arn" {
+#   value = aws_iam_openid_connect_provider.github.arn
+# }
 
 
 output "aws_iam_role" {
