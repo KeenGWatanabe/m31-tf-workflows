@@ -97,16 +97,22 @@ resource "aws_iam_openid_connect_provider" "github" {
   thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]  # GitHub's OIDC thumbprint2024
 }
 
-# Create IAM role for GitHub Actions (trust policy) 
+# IAM Role with Fixed Syntax
 resource "aws_iam_role" "github_actions" {
-  name = "github-actions-role-${local.project_name}" # unique per project
-  
+  name = "github-actions-role-${local.project_name}"  # Added project suffix for uniqueness
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
+<<<<<<< HEAD
       Effect: "Allow",
       Principal = {
         Federated = aws_iam_openid_connect_provider.github.arn # References existing provider
+=======
+      Effect = "Allow",  # Fixed comma
+      Principal = {
+        Federated = aws_iam_openid_connect_provider.github.arn  # Correct reference
+>>>>>>> e8c3672bfb1fc506fba507bb9a971318cb29c36f
       },
       Action = "sts:AssumeRoleWithWebIdentity",
       Condition = {
@@ -114,24 +120,15 @@ resource "aws_iam_role" "github_actions" {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         },
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:${local.github_repository}:*"
+          "token.actions.githubusercontent.com:sub" = "repo:${local.github_repository}:*"  # Using local
         }
       }
     }]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "github_actions" {
-  role       = aws_iam_role.github_actions.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # Start broad, then restrict
-}
 
-  
-# # 2. Policy attachements (repeatable)
-resource "aws_iam_role_policy_attachment" "dynamodb" {
-  role       = aws_iam_role.github_actions.name  
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess" # aws_iam_policy.terraform_lock_policy.arn
-}
+
 
 # Outputs to look for creations in aws
 output "s3_bucket_website_endpoint" {
