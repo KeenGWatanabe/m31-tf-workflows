@@ -118,7 +118,7 @@ resource "aws_iam_role" "github_actions" {
     Statement = [{
       Effect = "Allow",  # Fixed comma
       Principal = {
-        Federated = aws_iam_openid_connect_provider.github.arn  # Correct reference
+        Federated = "arn:aws:iam::255945442255:oidc-provider/token.actions.githubusercontent.com"   # Correct reference
       },
       Action = "sts:AssumeRoleWithWebIdentity",
       Condition = {
@@ -126,7 +126,7 @@ resource "aws_iam_role" "github_actions" {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         },
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:${local.github_repository}:*"  # Using local
+          "token.actions.githubusercontent.com:sub" = "repo:KeenGWatanabe/m3.1-tf-workflows:*"  # ${local.github_repository}
         }
       }
     }]
