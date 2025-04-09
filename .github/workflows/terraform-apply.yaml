@@ -25,12 +25,6 @@ jobs:
         role-session-name: github-actions-${{ env.TF_WORKSPACE }}
         audience: sts.amazonaws.com
 
-    - name: Verify AWS access
-      run: |
-        aws sts get-caller-identity
-        aws dynamodb describe-table --table-name terraform-state-locks
-        aws s3 ls || echo "S3 access check"
-    
     - uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.11.2  # Pin your version
