@@ -3,7 +3,7 @@ provider "aws" {
 }
 locals {
   project_name = "tf-workflows"
-  github_repository = "KeenGWatanabe/m3.1-tf-workflows" #github repo case-sensitive
+  github_repository = "KeenGWatanabe/m31workflows" #github repo case-sensitive
   }
 
 # Part 1: Create S3 Bucket
@@ -115,7 +115,7 @@ resource "aws_iam_role" "github_actions" {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         },
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:KeenGWatanabe/m3.1-tf-workflows:*"  # ${local.github_repository}
+          "token.actions.githubusercontent.com:sub" = "repo:KeenGWatanabe/m31workflows:*"  # ${local.github_repository}
         }
       }
     }]
