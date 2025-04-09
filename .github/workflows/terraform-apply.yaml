@@ -18,11 +18,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
    
-    - uses: aws-actions/configure-aws-credentials@v4
+    - uses: aws-actions/configure-aws-credentials@v3
       with:
         role-to-assume: arn:aws:iam::255945442255:role/github-actions-role
-        aws-region: ${{ env.AWS_REGION }}
         role-session-name: github-actions-${{ env.TF_WORKSPACE }}
+        aws-region: ${{ env.AWS_REGION }}
+        
         audience: sts.amazonaws.com
 
     - uses: hashicorp/setup-terraform@v2
