@@ -10,7 +10,7 @@ locals {
 # backend # check this created before calling
 terraform {
   backend "s3" {
-    bucket = "rgers3-tfstate-backend.com"
+    bucket = "rgers3.tfstate-backend.com"
     key = "terraform.tfstate"
     region = "us-east-1"
     dynamodb_table = "terraform-state-locks"  # Critical for locking
@@ -106,7 +106,6 @@ resource "aws_iam_role" "github_actions" {
     }]
   })
 }
-
 
 # Attach WHAT the role can do (permission policies)
 resource "aws_iam_role_policy_attachment" "dynamodb" {

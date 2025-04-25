@@ -9,3 +9,17 @@ resource "aws_secretsmanager_secret_version" "github_actions_creds_version" {
     AWS_SECRET_ACCESS_KEY = "your-secret-access-key"
   })
 }
+
+
+resource "aws_iam_policy" "secrets_policy" {
+  name = "SecretsManagerAccess-${local.projectname}"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["secretsmanager:GetSecretValue"]
+      Resource = aws_secretsmanager_secret.github_actions_creds.arn
+    }]
+  })
+}
