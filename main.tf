@@ -2,13 +2,24 @@ provider "aws" {
   region = "us-east-1" # Change to your desired region
 }
 locals {
-  project_name = "tf-workflows"
+  projectname = "tf-workflows"
   github_repository = "KeenGWatanabe/m31workflows" #github repo case-sensitive
   }
 
+
+# backend # check this created before calling
+terraform {
+  backend "s3" {
+    bucket = "rgers3-tfstate-backend.com"
+    key = "terraform.tfstate"
+    region = "us-east-1"
+    dynamodb_table = "terraform-state-locks"  # Critical for locking
+  }
+}
+
 # Part 1: Create S3 Bucket
 resource "aws_s3_bucket" "static_bucket" {
-  bucket        = "rgers3.${local.project_name}" # Replace with your desired bucket name
+  bucket        = "rgers3.${local.projectname}" # Replace with your desired bucket name
   force_destroy = true # Allows the bucket to be destroyed even if it contains objects
 }
 
@@ -55,21 +66,11 @@ resource "aws_s3_bucket_policy" "allow_public_access" {
 }
 
 
-# backend # check this created before calling
-terraform {
-  backend "s3" {
-    bucket = "rgers3.tfstate-backend.com"
-    key = "terraform.tfstate"
-    region = "us-east-1"
-    dynamodb_table = "terraform-state-locks"  # Critical for locking
-  }
-}
-
 
 
 # DynamoDB permissions ---added
 resource "aws_iam_policy" "terraform_lock_policy" {
-  name        = "TerraformLockTableAccess${local.project_name}"
+  name        = "TerraformLockTableAccess${local.projectname}"
   description = "Permissions for Terraform state locking"
 
   policy = jsonencode({
@@ -83,7 +84,7 @@ resource "aws_iam_policy" "terraform_lock_policy" {
           "dynamodb:DeleteItem",
           "dynamodb:Scan"
         ]
-        Resource = "arn:aws:dynamodb:*:*:table/terraform-state-locks"
+        Resource = "arn:aws:dynamodb:us-east-1:255945442255:table/terraform-state-locks"
       }
     ]
   })
@@ -91,36 +92,21 @@ resource "aws_iam_policy" "terraform_lock_policy" {
 
 data "aws_caller_identity" "current" {}
 
-# # OIDC Provider (correct thumbprint as of June 2024)
-# resource "aws_iam_openid_connect_provider" "github" {
-#   url             = "https://token.actions.githubusercontent.com"
-#   client_id_list  = ["sts.amazonaws.com"]
-#   thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
-# }
-
-# IAM Role with Fixed Syntax
 resource "aws_iam_role" "github_actions" {
-  name = "github-actions-role-${local.project_name}"  
-
+  name = "github-actions-role-${local.projectname}"
+  
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow",  # Fixed comma
+      Effect = "Allow"
       Principal = {
-        Federated = "arn:aws:iam::255945442255:oidc-provider/token.actions.githubusercontent.com"   # exact OIDC provider ARN
-      },
-      Action = "sts:AssumeRoleWithWebIdentity",
-      Condition = {
-        StringEquals = {
-          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
-        },
-        StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:KeenGWatanabe/m31workflows:*"  # ${local.github_repository}
-        }
+        AWS = "arn:aws:iam::255945442255:user/github-secrets-user" # Replace with actual IAM user ARN
       }
+      Action = "sts:AssumeRole"
     }]
   })
 }
+
 
 # Attach WHAT the role can do (permission policies)
 resource "aws_iam_role_policy_attachment" "dynamodb" {
