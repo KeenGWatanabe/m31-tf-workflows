@@ -42,8 +42,8 @@ jobs:
     - name: Terraform Backend Authentication (Optional, for remote state)
       run: |
         # e.g., for AWS S3 backend authentication
-        terraform init -backend-config="bucket=sctp-ce9-tfstate" \
-                       -backend-config="key=agusjuli-tf-ec2-dynamodb.tfstate" \
+        terraform init -backend-config="bucket=rgers3.tfstate-backend.com" \
+                       -backend-config="key=terraform.tfstate" \
                        -backend-config="region=us-east-1"  # Update these based on your backend configuration
 
     # Step 6: Terraform Plan (optional - review the plan)
