@@ -1,0 +1,55 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:  # Allows for manual triggering of the workflow
+    inputs:
+      environment:
+        description: 'Environment name'
+        required: true
+        default: 'production'
+
+env:            
+  AWS_REGION: ap-southeast-1
+
+jobs:
+  terraform-destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Step 2: Set up Terraform
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0  # Change the Terraform version as needed
+
+    # Step 3: Configure AWS credentials (optional, based on your cloud provider)
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{env.AWS_REGION }}
+
+    # Step 4: Initialize Terraform (if not already initialized)
+    - name: Terraform Init
+      run: terraform init
+
+    # Step 5: Authenticate with your backend if needed
+    - name: Terraform Backend Authentication (Optional, for remote state)
+      run: |
+        # e.g., for AWS S3 backend authentication
+        terraform init -backend-config="bucket=sctp-ce9-tfstate" \
+                       -backend-config="key=agusjuli-tf-ec2-dynamodb.tfstate" \
+                       -backend-config="region=us-east-1"  # Update these based on your backend configuration
+
+    # Step 6: Terraform Plan (optional - review the plan)
+    - name: Terraform Plan (Optional)
+      run: terraform plan -destroy -out=tfplan
+
+    # Step 7: Terraform Destroy
+    - name: Terraform Destroyus-east-1
+      run: terraform destroy -auto-approve
